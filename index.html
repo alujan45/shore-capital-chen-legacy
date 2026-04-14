@@ -1,1474 +1,511 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>陳氏傳承基金 — 海岸資本公司 | Chen Legacy Fund — Shore Capital Corporation</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Shore Capital Corporation — 海岸資本公司</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
 <style>
-  :root {
-    --cherry: #990011;
-    --cherry-dark: #6d0009;
-    --cherry-light: #c4001a;
-    --cream: #FCF6F5;
-    --navy: #1E2761;
-    --navy-light: #2d3a8c;
-    --gold: #C9A84C;
-    --text: #1a1a2e;
-    --muted: #666;
-    --border: #e8d5d5;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Noto Sans TC', sans-serif;
-    background: var(--cream);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* ── HEADER ── */
-  .header {
-    background: var(--navy);
-    padding: 18px 24px 14px;
-    text-align: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.3);
-  }
-  .header-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 4px;
-  }
-  .logo-mark {
-    width: 38px; height: 38px;
-    background: var(--cherry);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: Georgia, serif;
-    font-size: 20px; font-weight: bold;
-    color: white;
-    flex-shrink: 0;
-  }
-  .header-titles { text-align: left; }
-  .header h1 {
-    font-family: Georgia, serif;
-    font-size: clamp(14px, 3.5vw, 20px);
-    color: white;
-    letter-spacing: 0.3px;
-    line-height: 1.2;
-  }
-  .header-cn {
-    font-size: clamp(11px, 2.5vw, 14px);
-    color: rgba(255,255,255,0.65);
-    letter-spacing: 0.5px;
-  }
-  .header-sub {
-    font-size: 10px;
-    color: rgba(255,255,255,0.45);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin-top: 3px;
-  }
-
-  /* ── TABS ── */
-  .tab-bar {
-    background: var(--navy);
-    padding: 0 10px 12px;
-    display: flex;
-    gap: 5px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  .tab-bar::-webkit-scrollbar { display: none; }
-
-  .tab-btn {
-    flex-shrink: 0;
-    padding: 7px 12px;
-    border: 1.5px solid rgba(255,255,255,0.22);
-    border-radius: 20px;
-    background: transparent;
-    color: rgba(255,255,255,0.65);
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-    text-align: center;
-    line-height: 1.35;
-  }
-  .tab-btn:hover { border-color: rgba(255,255,255,0.55); color: white; }
-  .tab-btn.active {
-    background: var(--cherry);
-    border-color: var(--cherry);
-    color: white;
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(153,0,17,0.4);
-  }
-
-  /* ── CONTENT ── */
-  .tab-content { display: none; padding: 18px 14px 48px; max-width: 800px; margin: 0 auto; }
-  .tab-content.active { display: block; }
-
-  /* ── CARDS ── */
-  .card {
-    background: white;
-    border-radius: 12px;
-    padding: 18px;
-    margin-bottom: 14px;
-    box-shadow: 0 2px 12px rgba(30,39,97,0.07);
-    border: 1px solid var(--border);
-  }
-  .card-header {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 14px;
-  }
-  .card-icon {
-    width: 36px; height: 36px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-  .icon-cherry { background: rgba(153,0,17,0.1); }
-  .icon-navy { background: rgba(30,39,97,0.1); }
-  .icon-gold { background: rgba(201,168,76,0.15); }
-
-  .card h2 {
-    font-family: Georgia, serif;
-    font-size: 16px;
-    color: var(--navy);
-    line-height: 1.3;
-  }
-  .card-cn { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-  /* ── HERO STATS ── */
-  .stat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 14px;
-  }
-  .stat-box {
-    background: var(--navy);
-    border-radius: 10px;
-    padding: 13px 8px;
-    text-align: center;
-  }
-  .stat-num {
-    font-family: Georgia, serif;
-    font-size: clamp(18px, 5vw, 26px);
-    font-weight: bold;
-    color: white;
-    line-height: 1;
-  }
-  .stat-label { font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 4px; line-height: 1.3; }
-  .stat-box.highlight { background: var(--cherry); }
-
-  /* ── CHART ── */
-  .chart-wrap { position: relative; height: 210px; margin: 4px 0; }
-
-  /* ── SECTION LABEL ── */
-  .section-label {
-    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
-    text-transform: uppercase; color: var(--cherry); margin-bottom: 8px;
-  }
-
-  /* ── TABLE ── */
-  .data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 8px; }
-  .data-table th {
-    background: var(--navy); color: white; padding: 8px 10px;
-    text-align: left; font-weight: 600; font-size: 11px;
-  }
-  .data-table th:first-child { border-radius: 6px 0 0 0; }
-  .data-table th:last-child { border-radius: 0 6px 0 0; }
-  .data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  .data-table tr:last-child td { border-bottom: none; }
-  .data-table tr:nth-child(even) td { background: rgba(252,246,245,0.6); }
-
-  .return-badge {
-    display: inline-block; padding: 2px 8px; border-radius: 20px;
-    font-weight: 700; font-size: 12px;
-    background: rgba(153,0,17,0.1); color: var(--cherry);
-  }
-
-  /* ── COMPARISON ── */
-  .compare-row { display: flex; gap: 10px; margin-bottom: 10px; }
-  .compare-col { flex: 1; padding: 14px; border-radius: 10px; }
-  .col-shore { background: var(--navy); color: white; }
-  .col-inst { background: rgba(100,100,100,0.06); color: var(--text); border: 1.5px solid var(--border); }
-  .compare-col h3 { font-family: Georgia, serif; font-size: 13px; margin-bottom: 10px; line-height: 1.3; }
-  .col-shore h3 { color: white; }
-  .col-inst h3 { color: var(--navy); }
-  .fee-line {
-    font-size: 11.5px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.15);
-    display: flex; justify-content: space-between;
-  }
-  .col-inst .fee-line { border-color: var(--border); }
-  .fee-val { font-weight: 600; }
-
-  /* ── CALLOUT ── */
-  .callout {
-    background: var(--cherry); color: white; border-radius: 10px;
-    padding: 16px; margin: 12px 0; text-align: center;
-  }
-  .callout-num { font-family: Georgia, serif; font-size: 32px; font-weight: bold; line-height: 1; }
-  .callout-text { font-size: 12px; opacity: 0.9; margin-top: 4px; }
-
-  .callout-navy {
-    background: var(--navy); color: white; border-radius: 10px;
-    padding: 16px; margin: 12px 0;
-  }
-  .callout-navy h3 { font-family: Georgia, serif; font-size: 14px; margin-bottom: 8px; color: #aab4ff; }
-  .callout-navy p { font-size: 12px; opacity: 0.85; line-height: 1.65; }
-
-  /* ── TIMELINE ── */
-  .timeline { position: relative; }
-  .timeline::before {
-    content: ''; position: absolute; left: 18px; top: 0; bottom: 0;
-    width: 2px; background: linear-gradient(to bottom, var(--cherry), var(--navy));
-  }
-  .tl-item { display: flex; gap: 16px; padding: 0 0 20px 0; position: relative; }
-  .tl-dot {
-    width: 36px; height: 36px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700; flex-shrink: 0; z-index: 1;
-  }
-  .dot-cherry { background: var(--cherry); color: white; }
-  .dot-navy { background: var(--navy); color: white; }
-  .dot-gold { background: var(--gold); color: white; }
-  .dot-green { background: #006600; color: white; }
-  .tl-body { flex: 1; padding-top: 6px; }
-  .tl-year { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; }
-  .tl-title { font-family: Georgia, serif; font-size: 15px; color: var(--navy); margin: 2px 0; }
-  .tl-cn { font-size: 12px; color: var(--cherry); margin-bottom: 3px; }
-  .tl-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
-  .tl-value {
-    display: inline-block; margin-top: 6px; padding: 3px 10px;
-    background: rgba(30,39,97,0.08); border-radius: 20px;
-    font-size: 13px; font-weight: 700; color: var(--navy);
-  }
-
-  /* ── AUDIT FAILURES ── */
-  .failure-list { list-style: none; }
-  .failure-list li {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 9px 0; border-bottom: 1px solid var(--border);
-    font-size: 12.5px; line-height: 1.4;
-  }
-  .failure-list li:last-child { border-bottom: none; }
-  .fail-icon {
-    width: 22px; height: 22px; border-radius: 50%;
-    background: rgba(153,0,17,0.1); color: var(--cherry);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; flex-shrink: 0; margin-top: 1px;
-  }
-  .fail-co { font-weight: 600; color: var(--navy); }
-  .fail-note { color: var(--muted); font-size: 11px; }
-
-  /* ── OBJECTION CARDS ── */
-  .obj-card { border-radius: 12px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
-  .obj-header {
-    background: var(--navy); padding: 12px 16px;
-    display: flex; align-items: flex-start; gap: 10px;
-  }
-  .obj-num {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: var(--cherry); color: white;
-    font-size: 13px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; margin-top: 1px;
-  }
-  .obj-question { color: rgba(255,255,255,0.88); font-size: 13px; line-height: 1.45; }
-  .obj-cn { color: rgba(255,255,255,0.55); font-size: 11px; margin-top: 3px; }
-  .obj-body {
-    background: white; padding: 14px 16px;
-    border: 1px solid var(--border); border-top: none;
-    border-radius: 0 0 12px 12px;
-  }
-  .obj-answer { font-size: 12.5px; line-height: 1.65; color: var(--text); }
-  .obj-answer-cn { font-size: 12px; line-height: 1.65; color: var(--muted); margin-top: 10px; font-style: italic; }
-  .obj-tag {
-    display: inline-block; margin-top: 8px; padding: 3px 10px;
-    background: rgba(153,0,17,0.08); color: var(--cherry);
-    border-radius: 20px; font-size: 11px; font-weight: 600;
-  }
-
-  /* ── CLOSING ── */
-  .closing-card {
-    background: linear-gradient(135deg, var(--navy) 0%, #0d1540 100%);
-    border-radius: 12px; padding: 24px 20px;
-    text-align: center; color: white;
-  }
-  .closing-card h2 { font-family: Georgia, serif; font-size: 17px; color: white; margin-bottom: 8px; }
-  .closing-cn { font-size: 14px; color: rgba(255,255,255,0.65); margin-bottom: 14px; }
-  .closing-quote { font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.88); max-width: 480px; margin: 0 auto 10px; }
-  .closing-quote-cn { font-size: 13px; line-height: 1.8; color: rgba(255,255,255,0.62); max-width: 480px; margin: 0 auto 18px; font-style: italic; }
-  .contact-block {
-    background: rgba(255,255,255,0.08); border-radius: 8px;
-    padding: 12px 16px; font-size: 12px; color: rgba(255,255,255,0.8); line-height: 1.8;
-  }
-  .contact-name { font-family: Georgia, serif; font-size: 15px; color: white; font-weight: bold; }
-  .prayer { font-size: 24px; margin-top: 12px; }
-
-  /* ── VERIFY BADGE ── */
-  .verify-badge {
-    display: flex; align-items: center; gap: 8px;
-    background: rgba(30,39,97,0.06); border-left: 3px solid var(--navy);
-    border-radius: 0 8px 8px 0; padding: 10px 14px;
-    font-size: 12px; color: var(--navy); margin-top: 12px;
-  }
-
-  /* ── PCAOB STAT ── */
-  .big-stat {
-    text-align: center; padding: 16px;
-    background: rgba(153,0,17,0.05); border-radius: 10px;
-    border: 1.5px dashed rgba(153,0,17,0.3); margin: 12px 0;
-  }
-  .big-stat-num { font-family: Georgia, serif; font-size: 44px; font-weight: bold; color: var(--cherry); line-height: 1; }
-  .big-stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
-
-  /* ── BRIDGE BOX ── */
-  .bridge-box {
-    background: linear-gradient(135deg, var(--cherry) 0%, var(--cherry-dark) 100%);
-    border-radius: 12px; padding: 20px; color: white; text-align: center; margin: 16px 0;
-  }
-  .bridge-box h3 { font-family: Georgia, serif; font-size: 15px; margin-bottom: 12px; opacity: 0.9; }
-  .bridge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-  .bridge-item { background: rgba(255,255,255,0.12); border-radius: 8px; padding: 10px 6px; }
-  .bridge-val { font-family: Georgia, serif; font-size: 18px; font-weight: bold; line-height: 1; }
-  .bridge-key { font-size: 10px; opacity: 0.75; margin-top: 3px; }
-  .bridge-note { font-size: 11px; opacity: 0.8; line-height: 1.5; }
-
-  /* ── LANE CARDS ── */
-  .lane-card { border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
-  .lane-header { padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
-  .lane-1 .lane-header { background: var(--navy); }
-  .lane-2 .lane-header { background: var(--cherry); }
-  .lane-num {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: rgba(255,255,255,0.2); color: white;
-    font-family: Georgia, serif; font-size: 16px; font-weight: bold;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .lane-title { color: white; }
-  .lane-title h3 { font-family: Georgia, serif; font-size: 15px; }
-  .lane-title .lane-cn { font-size: 12px; opacity: 0.75; margin-top: 2px; }
-  .lane-body { background: white; padding: 16px; border: 1px solid var(--border); border-top: none; border-radius: 0 0 12px 12px; }
-  .lane-body p { font-size: 12.5px; line-height: 1.65; color: var(--text); margin-bottom: 8px; }
-  .lane-body p:last-child { margin-bottom: 0; }
-  .lane-body .cn { color: var(--muted); font-style: italic; font-size: 12px; }
-
-  /* ── CONTRASTS ── */
-  .contrast-row { display: flex; gap: 8px; margin: 10px 0; }
-  .contrast-col { flex: 1; padding: 12px; border-radius: 8px; text-align: center; }
-  .contrast-good { background: rgba(30,39,97,0.07); border: 1.5px solid var(--navy); }
-  .contrast-bad { background: rgba(153,0,17,0.05); border: 1.5px dashed var(--cherry); }
-  .contrast-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
-  .contrast-good .contrast-label { color: var(--navy); }
-  .contrast-bad .contrast-label { color: var(--cherry); }
-  .contrast-text { font-size: 12px; line-height: 1.5; color: var(--text); }
-
-  /* ── PROPERTY STATUS ── */
-  .prop-status {
-    display: inline-block; padding: 2px 8px; border-radius: 12px;
-    font-size: 10.5px; font-weight: 600;
-  }
-  .status-active { background: rgba(0,102,0,0.1); color: #006600; }
-  .status-closed { background: rgba(30,39,97,0.1); color: var(--navy); }
-  .status-record { background: rgba(201,168,76,0.2); color: #8b6914; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 480px) {
-    .compare-row { flex-direction: column; }
-    .bridge-grid { grid-template-columns: repeat(3, 1fr); }
-    .bridge-val { font-size: 15px; }
-    .tab-btn { padding: 6px 10px; font-size: 10.5px; }
-    .contrast-row { flex-direction: column; }
-  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; background: #FCF6F5; }
+  #root { height: 100%; }
 </style>
 </head>
 <body>
-
-<!-- ═══════════ HEADER ═══════════ -->
-<div class="header">
-  <div class="header-logo">
-    <div class="logo-mark">S</div>
-    <div class="header-titles">
-      <h1>Chen Legacy Fund · Shore Capital Corporation</h1>
-      <div class="header-cn">陳氏傳承基金 · 海岸資本公司</div>
-      <div class="header-sub">Confidential Investor Materials · 機密投資資料</div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════ TAB BAR ═══════════ -->
-<div class="tab-bar" id="tabBar">
-  <button class="tab-btn active" onclick="showTab('overview',this)">Overview<br><span style="font-size:10px;opacity:0.8">概述</span></button>
-  <button class="tab-btn" onclick="showTab('service',this)">Service Record<br><span style="font-size:10px;opacity:0.8">服務實績</span></button>
-  <button class="tab-btn" onclick="showTab('track',this)">Track Record<br><span style="font-size:10px;opacity:0.8">業績記錄</span></button>
-  <button class="tab-btn" onclick="showTab('fees',this)">Fee Comparison<br><span style="font-size:10px;opacity:0.8">費用對比</span></button>
-  <button class="tab-btn" onclick="showTab('audits',this)">Public Records<br><span style="font-size:10px;opacity:0.8">公共記錄 vs 審計</span></button>
-  <button class="tab-btn" onclick="showTab('path',this)">Pathways<br><span style="font-size:10px;opacity:0.8">投資路徑</span></button>
-  <button class="tab-btn" onclick="showTab('response',this)">Response<br><span style="font-size:10px;opacity:0.8">回應</span></button>
-</div>
-
-
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- TAB 1: OVERVIEW 概述                                    -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<div class="tab-content active" id="tab-overview">
-
-  <div class="stat-grid">
-    <div class="stat-box highlight">
-      <div class="stat-num">$1.05B</div>
-      <div class="stat-label">Year 10 Asset Value<br>第十年資產價值</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-num">$84M</div>
-      <div class="stat-label">Year 10 Annual Yield<br>第十年年度收益</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-num">0</div>
-      <div class="stat-label">Investor Losses<br>零投資人虧損</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-icon icon-cherry">📈</div>
-      <div>
-        <h2>$100M → $1.05 Billion in 10 Years</h2>
-        <div class="card-cn">陳氏傳承基金 — 十年增長軌跡</div>
-      </div>
-    </div>
-    <div class="chart-wrap">
-      <canvas id="growthChart"></canvas>
-    </div>
-    <div class="verify-badge">
-      <span>🔒</span>
-      <span>每個週期完成 1031 稅務遞延交換 — <strong>零資本利得稅</strong> | Zero capital gains tax at every cycle via 1031 exchange</span>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="section-label">The Structure / 架構說明</div>
-    <div class="stat-grid" style="grid-template-columns: repeat(2,1fr);">
-      <div class="stat-box">
-        <div class="stat-num">8%</div>
-        <div class="stat-label">Annual Cash Yield<br>年度現金收益率</div>
-      </div>
-      <div class="stat-box highlight">
-        <div class="stat-num">75%</div>
-        <div class="stat-label">Target Appreciation / 36 Months<br>36個月升值目標</div>
-      </div>
-    </div>
-    <p style="font-size:12.5px;color:var(--text);line-height:1.7;margin-top:12px;">
-      The <strong>Chen Legacy Fund</strong> targets 8% annual cash yield on deployed capital, distributed quarterly,
-      with 75% appreciation milestones every 36 months in the San Diego luxury real estate cycle.
-      Each milestone triggers a 1031 exchange — the entire gain is preserved and compounds forward.
-    </p>
-    <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px;font-style:italic;">
-      <strong>陳氏傳承基金</strong>目標：已部署資本實現8%年度現金收益，每季分配；每36個月達成75%升值里程碑，
-      並完成1031稅務遞延交換——所有獲利完整保留，持續複利增長。
-    </p>
-  </div>
-
-  <div class="card">
-    <div class="section-label">10-Year Growth Model / 十年增長模型</div>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Year / 年份</th>
-          <th>Asset Value / 資產價值</th>
-          <th>Annual Yield (8%) / 年度收益</th>
-          <th>Event / 事件</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>Year 0 / 起始</td><td><strong>$100M</strong></td><td>$8M</td><td style="font-size:11px;color:var(--muted)">Initial deployment / 初始部署</td></tr>
-        <tr><td>Year 3</td><td><strong>$175M</strong></td><td>$14M</td><td style="font-size:11px;color:var(--muted)">1031 Exchange / 稅務遞延交換</td></tr>
-        <tr><td>Year 6</td><td><strong>$306M</strong></td><td>$24.5M</td><td style="font-size:11px;color:var(--muted)">1031 Exchange / 稅務遞延交換</td></tr>
-        <tr><td><strong>Year 10</strong></td><td><strong style="color:var(--cherry)">$1.05B</strong></td><td><strong style="color:var(--cherry)">$84M</strong></td><td style="font-size:11px;color:var(--muted)">Mature fund / 成熟基金</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="callout-navy">
-    <h3>Bridge Note — The Pilot Program / 橋樑票據 — 試點計畫</h3>
-    <p>
-      橋樑票據（$500K–$1M）→ 試點計畫 → 陳氏傳承基金（$1億）<br>
-      橋樑票據並非獨立投資——而是在承諾$1億資金之前，<em>親眼驗證我們執行力</em>的機會。<br>
-      三年期限。7%擔保收益。公開記錄可供查驗。<br><br>
-      <span style="opacity:0.75">Bridge Note ($500K–$1M) → Pilot Program → Chen Legacy Fund ($100M).
-      The bridge note is not a standalone investment — it is the <em>proof of execution</em> before committing $100M.
-      Three years. 7% secured return. Public record verification.</span>
-    </p>
-  </div>
-
-</div>
-
-
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- TAB 2: SERVICE RECORD 服務實績                          -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-service">
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-icon icon-cherry">🏠</div>
-      <div>
-        <h2>The Rescue Portfolio</h2>
-        <div class="card-cn">救援案例實績 — 每一案均有記錄，可供查驗</div>
-      </div>
-    </div>
-    <p style="font-size:12.5px;line-height:1.7;color:var(--text);">
-      Andre Lujan has resolved situations that other brokers could not. Four properties — four different crises —
-      each resolved with professionalism, discretion, and zero loss to the client.
-    </p>
-    <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px;font-style:italic;">
-      Andre Lujan 成功化解了其他經紀人束手無策的困境。四處房產——四種不同危機——
-      每一案均以專業、謹慎的方式圓滿處理，客戶零損失。
-    </p>
-  </div>
-
-  <div class="timeline">
-
-    <div class="tl-item">
-      <div class="tl-dot dot-cherry">1</div>
-      <div class="tl-body">
-        <div class="tl-year">SIX-YEAR OCCUPATION / 六年非法占據</div>
-        <div class="tl-title">37 Twiggs Street — The Squatter Recovery</div>
-        <div class="tl-cn">37 Twiggs 街 — 違規占據者清退案</div>
-        <div class="tl-desc">
-          A professional squatter had occupied the property for <strong>six years</strong>. Multiple prior agents failed.
-          Andre coordinated legal action, cash-for-keys negotiations, and property remediation —
-          recovering a property that most brokers had written off.
-          Now listed and actively marketed under Shore Capital management.
-        </div>
-        <div class="tl-desc" style="margin-top:8px;font-style:italic;color:var(--muted);">
-          一名職業性違規占據者占有該房產長達<strong>六年</strong>。多位前任經紀人均告失敗。
-          Andre 協調法律行動、現金換鑰匙談判及房產修繕——成功收回這處幾乎被所有人放棄的房產。
-          目前由海岸資本管理，積極掛牌銷售中。
-        </div>
-        <span class="tl-value">🏠 Active Listing / 現役掛牌</span>
-      </div>
-    </div>
-
-    <div class="tl-item">
-      <div class="tl-dot dot-gold">2</div>
-      <div class="tl-body">
-        <div class="tl-year">RECORD SALE / 創紀錄成交</div>
-        <div class="tl-title">Pelican Crest — $26M Record Price</div>
-        <div class="tl-cn">Pelican Crest — $2,600萬創紀錄成交</div>
-        <div class="tl-desc">
-          The buyer's agent arrived with a $25M offer — at the time the highest price ever offered for the property.
-          Andre countered and secured <strong>$26M</strong>, setting a new record for the development.
-          Proof that Shore Capital does not accept the first offer.
-        </div>
-        <div class="tl-desc" style="margin-top:8px;font-style:italic;color:var(--muted);">
-          買家經紀人提出$2,500萬的出價——當時是該房產有史以來最高的報價。
-          Andre 反向議價，最終以<strong>$2,600萬</strong>成交，創下該社區新紀錄。
-          這正是海岸資本不接受第一個出價的最佳證明。
-        </div>
-        <span class="tl-value" style="background:rgba(201,168,76,0.15);color:#8b6914;">🏆 $26M Record / 創紀錄 $2,600萬</span>
-      </div>
-    </div>
-
-    <div class="tl-item">
-      <div class="tl-dot dot-navy">3</div>
-      <div class="tl-body">
-        <div class="tl-year">SUCCESSFUL CLOSE / 順利成交</div>
-        <div class="tl-title">67 Sanctuary — Complex Close Executed</div>
-        <div class="tl-cn">67 Sanctuary — 複雜交易圓滿執行</div>
-        <div class="tl-desc">
-          A property with title complexities that required careful coordination between multiple parties.
-          Shore Capital managed the close from contract to recording —
-          demonstrating the operational depth that comes with 20+ years in the San Diego luxury market.
-        </div>
-        <div class="tl-desc" style="margin-top:8px;font-style:italic;color:var(--muted);">
-          該房產涉及多方協調的產權複雜問題。海岸資本全程管理從合約簽署到產權登記的完整流程——
-          展現了20餘年聖地牙哥豪宅市場的深厚執行實力。
-        </div>
-        <span class="tl-value" style="background:rgba(30,39,97,0.1);color:var(--navy);">✅ Closed / 已成交</span>
-      </div>
-    </div>
-
-    <div class="tl-item">
-      <div class="tl-dot dot-green">4</div>
-      <div class="tl-body">
-        <div class="tl-year">ACTIVE LISTING / 現役掛牌</div>
-        <div class="tl-title">22 Sanctuary — Currently Active</div>
-        <div class="tl-cn">22 Sanctuary — 積極銷售中</div>
-        <div class="tl-desc">
-          Currently listed and actively marketed. Andre's commitment to this listing —
-          and to 37 Twiggs — is unconditional and remains intact regardless of investment discussions.
-          <strong>These listings will never be used as leverage or tied to any investment outcome.</strong>
-        </div>
-        <div class="tl-desc" style="margin-top:8px;font-style:italic;color:var(--muted);">
-          目前積極掛牌銷售。Andre 對此掛牌案——及37 Twiggs——的承諾是無條件的，
-          與任何投資討論的結果均無關聯。<strong>這些掛牌案絕不會作為談判籌碼或與投資結果掛鉤。</strong>
-        </div>
-        <span class="tl-value" style="background:rgba(0,102,0,0.1);color:#006600;">🟢 Active / 積極銷售中</span>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="card">
-    <div class="section-label">Property Status Summary / 房產狀態總覽</div>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Property / 房產</th>
-          <th>Challenge / 挑戰</th>
-          <th>Outcome / 結果</th>
-          <th>Status / 狀態</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>37 Twiggs</strong></td>
-          <td style="font-size:11px;color:var(--muted);">6-year squatter / 六年非法占據</td>
-          <td style="font-size:11px;">Recovered &amp; listed / 收回並掛牌</td>
-          <td><span class="prop-status status-active">Active / 銷售中</span></td>
-        </tr>
-        <tr>
-          <td><strong>Pelican Crest</strong></td>
-          <td style="font-size:11px;color:var(--muted);">$25M offer received / 收到$2,500萬出價</td>
-          <td style="font-size:11px;">Closed at $26M record / $2,600萬創紀錄成交</td>
-          <td><span class="prop-status status-record">Record / 創紀錄</span></td>
-        </tr>
-        <tr>
-          <td><strong>67 Sanctuary</strong></td>
-          <td style="font-size:11px;color:var(--muted);">Title complexity / 產權複雜</td>
-          <td style="font-size:11px;">Successfully closed / 順利成交</td>
-          <td><span class="prop-status status-closed">Closed / 已成交</span></td>
-        </tr>
-        <tr>
-          <td><strong>22 Sanctuary</strong></td>
-          <td style="font-size:11px;color:var(--muted);">Luxury market timing / 豪宅市場時機</td>
-          <td style="font-size:11px;">Actively marketed / 積極銷售中</td>
-          <td><span class="prop-status status-active">Active / 銷售中</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-</div>
-
-
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- TAB 3: TRACK RECORD 業績記錄                            -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-track">
-
-  <div class="stat-grid">
-    <div class="stat-box">
-      <div class="stat-num">23</div>
-      <div class="stat-label">Properties / 房產交易</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-num">288</div>
-      <div class="stat-label">Units / 住宅單位</div>
-    </div>
-    <div class="stat-box highlight">
-      <div class="stat-num">$33.6M</div>
-      <div class="stat-label">Net Gains / 淨獲利</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-icon icon-cherry">🏆</div>
-      <div>
-        <h2>Six Complete Market Cycles</h2>
-        <div class="card-cn">六個完整市場週期 — 零投資人虧損</div>
-      </div>
-    </div>
-    <div class="chart-wrap">
-      <canvas id="cycleChart"></canvas>
-    </div>
-    <div class="verify-badge">
-      <span>📋</span>
-      <span>所有報酬均可查驗 — 橙縣及洛杉磯縣地政機關、產權紀錄、稅務文件 | All returns verifiable — County Recorder, title records, tax filings</span>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="section-label">Investment Cycles / 投資週期詳情</div>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Cycle / 週期</th>
-          <th>Period / 時期</th>
-          <th>Market Phase / 市場階段</th>
-          <th>Return / 報酬率</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>1</strong></td>
-          <td>2003–2007</td>
-          <td>Early expansion<br><span style="font-size:11px;color:var(--muted)">早期擴張</span></td>
-          <td><span class="return-badge">433%</span></td>
-        </tr>
-        <tr>
-          <td><strong>2</strong></td>
-          <td>2009–2013</td>
-          <td>Post-crisis recovery<br><span style="font-size:11px;color:var(--muted)">金融危機後復甦</span></td>
-          <td><span class="return-badge">181%</span></td>
-        </tr>
-        <tr>
-          <td><strong>3</strong></td>
-          <td>2013–2015</td>
-          <td>Post-correction<br><span style="font-size:11px;color:var(--muted)">調整後期</span></td>
-          <td><span class="return-badge">165%</span></td>
-        </tr>
-        <tr>
-          <td><strong>4</strong></td>
-          <td>2016–2018</td>
-          <td>Late cycle<br><span style="font-size:11px;color:var(--muted)">後期週期</span></td>
-          <td><span class="return-badge">156%</span></td>
-        </tr>
-        <tr>
-          <td><strong>5</strong></td>
-          <td>2019–2023</td>
-          <td>COVID disruption<br><span style="font-size:11px;color:var(--muted)">疫情衝擊期間</span></td>
-          <td><span class="return-badge">68%</span></td>
-        </tr>
-        <tr>
-          <td><strong>6</strong></td>
-          <td>2020–2025</td>
-          <td>Rate cycle recovery<br><span style="font-size:11px;color:var(--muted)">利率週期復甦</span></td>
-          <td><span class="return-badge">145%</span></td>
-        </tr>
-      </tbody>
-    </table>
-    <div style="margin-top:14px;padding:12px;background:rgba(30,39,97,0.05);border-radius:8px;">
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-        <span style="color:var(--muted)">Average Return / 平均報酬率</span>
-        <strong style="color:var(--navy)">191%</strong>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-        <span style="color:var(--muted)">Lowest Cycle (COVID) / 最低週期</span>
-        <strong style="color:var(--cherry)">68%</strong>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;">
-        <span style="color:var(--muted)">Investor Losses / 投資人虧損</span>
-        <strong style="color:#006600">零 / Zero</strong>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="section-label">Summary / 總覽</div>
-    <p style="font-size:12.5px;line-height:1.7;color:var(--text);">
-      二十年間，我們完成了23筆房產交易，合計288個單位。累計投入資金$4,000萬美元，創造淨獲利$3,360萬美元。
-      <strong>零投資人虧損。</strong>每一筆交易均永久登記於橙縣及洛杉磯縣地政機關——
-      此為不可竄改、不可更動之永久公開紀錄，任何人均可獨立查驗。
-    </p>
-    <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px;font-style:italic;">
-      Over 20 years, 23 property transactions, 288 units. $40M invested, $33.6M net gains.
-      Zero investor losses. Every transaction permanently recorded with county authorities —
-      immutable public record, independently verifiable by anyone.
-    </p>
-  </div>
-
-  <div class="callout-navy">
-    <h3>Andre P. Lujan · CA Broker #01475314</h3>
-    <p>
-      20+ years of documented real estate investment cycles in San Diego and Orange Counties.
-      Every transaction recorded with the county — not self-reported, not fund accounting, not auditor opinion.
-      <strong>Immutable public record.</strong><br><br>
-      <span style="opacity:0.7;font-style:italic;">
-        超過20年記錄在案的房地產投資週期。每一筆交易均登記於縣政府——
-        非自我陳述、非基金會計、非審計師意見。<strong>不可更改之公開紀錄。</strong>
-      </span>
-    </p>
-  </div>
-
-</div>
-
-
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- TAB 4: FEE COMPARISON 費用對比                          -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-fees">
-
-  <div class="callout">
-    <div class="callout-num">$870K+</div>
-    <div class="callout-text">LP savings vs. institutional fee structure on a $1M investment · 與機構費用結構相比，投資人節省逾$87萬</div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-icon icon-navy">⚖️</div>
-      <div>
-        <h2>Shore Capital vs. Institutional PE</h2>
-        <div class="card-cn">海岸資本 vs 機構私募股權 — 費用結構對比</div>
-      </div>
-    </div>
-
-    <div class="compare-row">
-      <div class="compare-col col-shore">
-        <h3>Shore Capital / 海岸資本</h3>
-        <div class="fee-line"><span>AUM Fee / 資產管理費</span><span class="fee-val">$0</span></div>
-        <div class="fee-line"><span>Acquisition Fee / 收購費</span><span class="fee-val">$0</span></div>
-        <div class="fee-line"><span>Disposition Fee / 處置費</span><span class="fee-val">$0</span></div>
-        <div class="fee-line"><span>Property Mgmt / 物業管理費</span><span class="fee-val">$0</span></div>
-        <div class="fee-line"><span>Construction Mgmt / 施工管理費</span><span class="fee-val">$0</span></div>
-        <div class="fee-line"><span>Preferred Return Hurdle</span><span class="fee-val">None / 無</span></div>
-        <div class="fee-line" style="border:none;margin-top:8px;"><span><strong>Profit Split / 利潤分配</strong></span><span class="fee-val" style="color:#aab4ff;"><strong>50/50 Net</strong></span></div>
-      </div>
-      <div class="compare-col col-inst">
-        <h3>Institutional PE / 機構私募</h3>
-        <div class="fee-line"><span>AUM Fee (2%/yr)</span><span class="fee-val" style="color:var(--cherry);">$20K/yr</span></div>
-        <div class="fee-line"><span>Acquisition Fee (1.5%)</span><span class="fee-val" style="color:var(--cherry);">$15K</span></div>
-        <div class="fee-line"><span>Disposition Fee (1%)</span><span class="fee-val" style="color:var(--cherry);">$10K</span></div>
-        <div class="fee-line"><span>Mgmt Fee (1%/yr)</span><span class="fee-val" style="color:var(--cherry);">$10K/yr</span></div>
-        <div class="fee-line"><span>Construction Mgmt (5%)</span><span class="fee-val" style="color:var(--cherry);">~$50K+</span></div>
-        <div class="fee-line"><span>Preferred Return</span><span class="fee-val" style="color:var(--cherry);">8% hurdle</span></div>
-        <div class="fee-line" style="border:none;margin-top:8px;"><span><strong>Carry / 績效分成</strong></span><span class="fee-val" style="color:var(--cherry);"><strong>20% gross profit</strong></span></div>
-      </div>
-    </div>
-
-    <div class="chart-wrap">
-      <canvas id="feeChart"></canvas>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="section-label">The Math / 數學計算 — $1M Investment · 165% Return</div>
-    <table class="data-table">
-      <thead>
-        <tr><th>Structure / 架構</th><th>Gross Profit / 毛利</th><th>Total Fees / 總費用</th><th>LP Net / 投資人淨收益</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Shore Capital</strong><br><span style="font-size:11px;color:var(--muted);">50/50 net profits / 五五平分淨利潤</span></td>
-          <td>$1,650,000</td>
-          <td style="color:#006600;"><strong>$0</strong></td>
-          <td style="color:var(--navy);"><strong>$825,000</strong></td>
-        </tr>
-        <tr>
-          <td><strong>Institutional PE</strong><br><span style="font-size:11px;color:var(--muted);">2+20 structure / 2+20架構</span></td>
-          <td>$1,650,000</td>
-          <td style="color:var(--cherry);"><strong>~$465,000</strong></td>
-          <td style="color:var(--muted);">$592,500*</td>
-        </tr>
-      </tbody>
-    </table>
-    <p style="font-size:10.5px;color:var(--muted);margin-top:8px;line-height:1.5;">
-      * Institutional estimate: 2% AUM × 3yr ($60K) + 20% carry ($330K) + acquisition 1.5% ($15K) + disposition 1% ($10K) + mgmt 1%/yr × 3yr ($30K) + admin.<br>
-      Shore的50/50基於<em>淨</em>利潤——完全利益一致。無論績效如何，均不收取任何費用。
-    </p>
-  </div>
-
-  <div class="card">
-    <div class="section-label">The Buffett Benchmark / 巴菲特基準比較</div>
-    <p style="font-size:12.5px;line-height:1.7;color:var(--text);">
-      Warren Buffett's original Buffett Partnership structure charged <strong>25% of profits above a 6% hurdle</strong>.
-      Shore Capital charges <strong>50% of net profits with zero hurdle</strong> —
-      but compensates with zero management fees, zero acquisition fees, and zero disposition fees.
-      On a $1M investment at Shore's historical 165% return, the LP nets <strong>$825K</strong> vs ~$593K institutionally.
-    </p>
-    <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px;font-style:italic;">
-      華倫·巴菲特最初的巴菲特合夥基金架構收取超過6%門檻的<strong>25%利潤</strong>。
-      海岸資本收取<strong>淨利潤的50%，無最低報酬門檻</strong>——但以零管理費、零收購費、零處置費作為補償。
-      在$100萬投資、海岸資本歷史165%報酬率下，投資人淨收$82.5萬，機構架構下僅約$59.3萬。
-    </p>
-  </div>
-
-  <div class="callout-navy">
-    <h3>互利共贏 — Perfect Alignment / 完美利益一致</h3>
-    <p>
-      我們的架構坦誠透明、一目瞭然：零管理費、零資產管理費、零物業管理費、零施工管理費。
-      唯有您獲利，我們方能獲利；每一分利潤，均等分享。此乃<strong>互利共贏</strong>、利益高度一致之合夥關係，亦是最純粹之商業信義。<br><br>
-      <span style="opacity:0.75;">Shore Capital earns nothing until you do. One clean split — we win when you win.</span>
-    </p>
-  </div>
-
-</div>
-
-
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- TAB 5: PUBLIC RECORDS vs AUDITS 公共記錄 vs 審計        -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-audits">
-
-  <div class="big-stat">
-    <div class="big-stat-num">39%</div>
-    <div class="big-stat-label">
-      of audit engagements have material deficiencies<br>
-      (PCAOB Inspection Reports — 2023)<br>
-      美國公開公司審計監督委員會：39%的審計業務存在重大缺陷
-    </div>
-  </div>
-
-  <div class="contrast-row">
-    <div class="contrast-col contrast-good">
-      <div class="contrast-label">County Records<br>縣政府地政紀錄</div>
-      <div class="contrast-text">
-        不可竄改 (Immutable)<br>
-        不可更動 (Unalterable)<br>
-        永久存在 (Permanent)<br>
-        任何人可查驗 (Publicly verifiable)<br>
-        <strong>客觀事實</strong>
-      </div>
-    </div>
-    <div class="contrast-col contrast-bad">
-      <div class="contrast-label">Audited Financials<br>審計財務報告</div>
-      <div class="contrast-text">
-        可撤回 (Revocable)<br>
-        可修訂 (Revisable)<br>
-        存在意見分歧 (Subject to opinion)<br>
-        可重新陳述 (Restatable)<br>
-        <strong>意見書</strong>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-icon icon-cherry">⚠️</div>
-      <div>
-        <h2>When Audits Failed Investors</h2>
-        <div class="card-cn">審計報告未能保護投資人的18個案例</div>
-      </div>
-    </div>
-    <ul class="failure-list">
-      <li>
-        <div class="fail-icon">✗</div>
-        <div>
-          <div><span class="fail-co">Enron / 安隆</span> <span style="font-size:11px;color:var(--muted);">2001</span></div>
-          <div class="fail-note">Arthur Andersen clean audit → $74B loss. 持有最乾淨的審計報告 → $740億損失</div>
-        </div>
-      </li>
-      <li>
-        <div class="fail-icon">✗</div>
-        <div>
-          <div><span class="fail-co">WorldCom</span> <span style="font-size:11px;color:var(--muted);">2002</span></div>
-          <div class="fail-note">Arthur Andersen clean audit → $11B fraud. 審計通過 → $110億詐欺</div>
-        </div>
-      </li>
-      <li>
-        <div class="fail-icon">✗</div>
-        <div>
-          <div><span class="fail-co">Wirecard</span> <span style="font-size:11px;color:var(--muted);">2020</span></div>
-          <div class="fail-note">EY clean audit → $2B that never existed. 安永會計師事務所審計通過 → $20億根本不存在</div>
-        </div>
-      </li>
-      <li>
-        <div class="fail-icon">✗</div>
-        <div>
-          <div><span class="fail-co">Silicon Valley Bank / 矽谷銀行</span> <span style="font-size:11px;color:var(--muted);">2023</span></div>
-          <div class="fail-note">KPMG clean audit 14 days before collapse → $42B bank run. 倒閉前14天審計通過</div>
-        </div>
-      </li>
-      <li>
-        <div class="fail-icon">✗</div>
-        <div>
-          <div><span class="fail-co">FTX</span> <span style="font-size:11px;color:var(--muted);">2022</span></div>
-          <div class="fail-note">Boutique firm audit → $8B fraud. 審計通過 → $80億詐欺</div>
-        </div>
-      </li>
-      <li>
-        <div class="fail-icon">✗</div>
-        <div>
-          <div><span class="fail-co">Bernie Madoff / 馬多夫</span> <span style="font-size:11px;color:var(--muted);">2008</span></div>
-          <div class="fail-note">20+ years of "clean" audits → $65B Ponzi. 20餘年「乾淨」審計 → $650億龐氏騙局</div>
-        </div>
-      </li>
-      <li>
-        <div class="fail-icon">✗</div>
-        <div>
-          <div><span class="fail-co">Evergrande / 恆大</span> <span style="font-size:11px;color:var(--muted);">2021</span></div>
-          <div class="fail-note">PwC clean audits for years → $300B default. 普華永道連年審計通過 → $3,000億違約</div>
-        </div>
-      </li>
-      <li>
-        <div class="fail-icon">✗</div>
-        <div>
-          <div><span class="fail-co">Lehman Brothers / 雷曼兄弟</span> <span style="font-size:11px;color:var(--muted);">2008</span></div>
-          <div class="fail-note">Ernst &amp; Young clean audit → largest bankruptcy in US history. 安永審計通過 → 美國史上最大破產案</div>
-        </div>
-      </li>
-      <li>
-        <div class="fail-icon">✗</div>
-        <div>
-          <div><span class="fail-co">Luckin Coffee / 瑞幸咖啡</span> <span style="font-size:11px;color:var(--muted);">2020</span></div>
-          <div class="fail-note">Ernst &amp; Young clean audit → $310M fabricated sales. 安永審計通過 → $3.1億虛假銷售</div>
-        </div>
-      </li>
-      <li>
-        <div class="fail-icon">✗</div>
-        <div>
-          <div><span class="fail-co">Rite Aid</span> <span style="font-size:11px;color:var(--muted);">2023</span></div>
-          <div class="fail-note">Deloitte clean audit → bankruptcy. 德勤審計通過 → 破產</div>
-        </div>
-      </li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <div class="section-label">Shore Capital's Alternative / 海岸資本的替代方案</div>
-    <p style="font-size:12.5px;line-height:1.7;color:var(--text);">
-      我們充分理解，也衷心尊重貴方對審計財務報告之要求。謹此以誠意提出另一種驗證途徑，供您參考：
-      我們的每一筆交易均永久登錄於縣政府地政資料庫——此為美國政府之正式紀錄，任何人無法竄改，亦無法重新陳述。
-    </p>
-    <p style="font-size:12.5px;line-height:1.7;color:var(--text);margin-top:8px;">
-      審計財務報告，本質上是專業機構在特定時點所出具之<strong>意見書</strong>，存在事後修訂之可能性。
-      相較之下，縣地政資料庫之數據為<strong>客觀事實</strong>，永久存在，且任何第三方均可獨立查驗。
-      此乃最高標準之透明度。
-    </p>
-    <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-top:10px;font-style:italic;">
-      We fully understand and sincerely respect your requirement for audited financial statements. We respectfully offer
-      an alternative: every transaction permanently recorded in US government databases — immutable, unalterable.
-      Audited financials are an opinion. County records are fact. This is the highest standard of transparency.
-    </p>
-    <div style="text-align:center;margin-top:16px;padding:14px;background:rgba(153,0,17,0.05);border-radius:8px;border:1px dashed rgba(153,0,17,0.2);">
-      <div style="font-family:Georgia,serif;font-size:15px;color:var(--navy);margin-bottom:4px;">「意見終究是意見」</div>
-      <div style="font-size:12px;color:var(--muted);">"An opinion is, ultimately, an opinion."</div>
-    </div>
-  </div>
-
-  <div class="callout-navy">
-    <h3>The Verification Path / 查驗途徑</h3>
-    <p>
-      橙縣地政機關 (Orange County Recorder) · 洛杉磯縣地政機關 (LA County Recorder)<br>
-      產權紀錄 (Title Records) · 稅務文件 (Tax Documents)<br>
-      任何公證人、律師或第三方均可於一小時內獨立查驗所有交易。<br><br>
-      <span style="opacity:0.75;">Any notary, attorney, or third party can independently verify all transactions within one hour.</span>
-    </p>
-  </div>
-
-</div>
-
-
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- TAB 6: INVESTMENT PATHWAYS 投資路徑                    -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-path">
-
-  <div class="lane-card lane-1">
-    <div class="lane-header">
-      <div class="lane-num">1</div>
-      <div class="lane-title">
-        <h3>Lane 1 — The Secured Note / 第一軌道 — 擔保票據</h3>
-        <div class="lane-cn">安全途徑 · Safe Pathway</div>
-      </div>
-    </div>
-    <div class="lane-body">
-      <p>
-        A <strong>$3–5 million promissory note</strong> at 7% annual interest, secured by an LLC holding title to
-        coastal California real property. Three-year term.
-        This is <strong>debt, not equity</strong> — no minimum deal size applies. No investment committee threshold.
-      </p>
-      <p>
-        Start here, watch us perform, then decide on Lane 2.
-      </p>
-      <p class="cn">
-        一筆三百萬至五百萬美元的本票，年利率7%，由持有加州海岸不動產所有權之有限責任公司提供擔保。三年期限。
-        此為純粹之債務工具，非股權投資——無最低交易金額之限制，不觸發投資委員會門檻。
-        您可從此起步，親身見證我們的執行能力，再決定是否進入第二軌道。
-      </p>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;">
-        <div style="text-align:center;padding:10px;background:rgba(30,39,97,0.06);border-radius:8px;">
-          <div style="font-family:Georgia,serif;font-size:18px;color:var(--navy);font-weight:bold;">7%</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;">Annual Interest<br>年利率</div>
-        </div>
-        <div style="text-align:center;padding:10px;background:rgba(30,39,97,0.06);border-radius:8px;">
-          <div style="font-family:Georgia,serif;font-size:18px;color:var(--navy);font-weight:bold;">3 yr</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;">Term / 期限</div>
-        </div>
-        <div style="text-align:center;padding:10px;background:rgba(30,39,97,0.06);border-radius:8px;">
-          <div style="font-family:Georgia,serif;font-size:18px;color:var(--navy);font-weight:bold;">🔒</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;">Secured / 擔保</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="lane-card lane-2">
-    <div class="lane-header">
-      <div class="lane-num">2</div>
-      <div class="lane-title">
-        <h3>Lane 2 — The Equity Partnership / 第二軌道 — 股權合夥</h3>
-        <div class="lane-cn">成長途徑 · Growth Pathway</div>
-      </div>
-    </div>
-    <div class="lane-body">
-      <p>
-        A <strong>50/50 co-investment</strong> in $15 million+ coastal California buildings.
-        We execute the full business plan — acquisition, renovation, stabilization,
-        and 1031 tax-deferred exchange every 30–36 months.
-      </p>
-      <p>
-        Based on our 20-year track record of 145% cumulative returns, a <strong>$100 million initial allocation
-        grows to over $1 billion in 10 years</strong>, generating $84 million in annual yield.
-      </p>
-      <p class="cn">
-        以1,500萬美元以上之加州海岸不動產進行五五共同投資。我方全程負責執行完整商業計畫——
-        收購、翻修、穩定營運，並每30至36個月完成一次1031稅務遞延交換。
-        根據我們二十年來累積報酬率達145%的實績，初始投入$1億美元，10年後可穩健成長為逾$10億，
-        每年創造$8,400萬之穩定收益。
-      </p>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-icon icon-gold">🏛️</div>
-      <div>
-        <h2>Chen Legacy Fund — 10-Year Model</h2>
-        <div class="card-cn">陳氏傳承基金 — 十年模型</div>
-      </div>
-    </div>
-    <div class="chart-wrap">
-      <canvas id="pathChart"></canvas>
-    </div>
-    <div class="bridge-box" style="margin-top:14px;">
-      <h3>Bridge Note — The Entry Point / 橋樑票據 — 入場起點</h3>
-      <div class="bridge-grid">
-        <div class="bridge-item">
-          <div class="bridge-val">$500K–$1M</div>
-          <div class="bridge-key">Bridge Amount<br>橋樑金額</div>
-        </div>
-        <div class="bridge-item">
-          <div class="bridge-val">7%</div>
-          <div class="bridge-key">Secured Return<br>擔保報酬率</div>
-        </div>
-        <div class="bridge-item">
-          <div class="bridge-val">3 yr</div>
-          <div class="bridge-key">Term / 期限</div>
-        </div>
-      </div>
-      <p class="bridge-note">
-        橋樑票據 → 試點計畫驗證 → 陳氏傳承基金 ($1億)<br>
-        Bridge Note → Pilot execution proof → Chen Legacy Fund ($100M)
-      </p>
-    </div>
-  </div>
-
-  <div class="callout-navy">
-    <h3>The Sequence / 路徑順序</h3>
-    <p>
-      <strong>Step 1:</strong> Bridge note ($500K–$1M, 7%, 3 years, secured) — watch us perform<br>
-      <strong>Step 2:</strong> After execution verified — Lane 1 or Lane 2 at full scale<br>
-      <strong>Step 3:</strong> Chen Legacy Fund — $100M → $1.05B over 10 years<br><br>
-      <span style="opacity:0.75;font-style:italic;">
-        第一步：橋樑票據（$50萬–$100萬，7%，三年期，有擔保）——親眼見證執行力<br>
-        第二步：查驗執行後——按完整規模進入第一或第二軌道<br>
-        第三步：陳氏傳承基金——$1億在10年內成長至$10.5億
-      </span>
-    </p>
-  </div>
-
-</div>
-
-
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- TAB 7: RESPONSE 回應                                    -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-response">
-
-  <div class="card">
-    <div class="card-header">
-      <div class="card-icon icon-navy">📋</div>
-      <div>
-        <h2>Addressing Ariel's Three Objections</h2>
-        <div class="card-cn">針對Ariel三項異議的回應 (2026年4月11日)</div>
-      </div>
-    </div>
-    <p style="font-size:12px;color:var(--muted);line-height:1.6;">
-      感謝貴方團隊在整個評估過程中展現的坦誠與透明，我們深感欽佩，也由衷表示尊重。<br>
-      <em>Thank you for your team's transparent evaluation — we deeply admire this and sincerely respect the process.</em>
-    </p>
-  </div>
-
-  <div class="obj-card">
-    <div class="obj-header">
-      <div class="obj-num">1</div>
-      <div>
-        <div class="obj-question">Objection: "Deal size is below Xinchen's investment threshold."</div>
-        <div class="obj-cn">異議：「交易規模低於新辰的投資門檻。」</div>
-      </div>
-    </div>
-    <div class="obj-body">
-      <div class="obj-answer">
-        The secured note is a <strong>debt instrument</strong>, not equity.
-        As a lending position, it does not trigger investment committee criteria for minimum deal size.
-        The $3–5M note is comparable to a term loan from a high-net-worth individual —
-        a category distinct from fund-level equity commitments.
-        The $100M equity commitment (Lane 2) has no minimum threshold issue — it exceeds any typical fund threshold.
-      </div>
-      <div class="obj-answer-cn">
-        擔保票據為純粹之<strong>債務工具</strong>，其性質與股權截然不同。
-        作為放款性質之金融工具，擔保票據不觸發投資委員會針對最低交易金額所設立之相關門檻。
-        $300萬至$500萬票據相當於高淨值人士提供之定期貸款——
-        此一類別與基金層級的股權承諾截然有別。
-        第二軌道$1億美元股權承諾則完全不存在最低門檻問題。
-      </div>
-      <span class="obj-tag">Debt ≠ Equity / 債務 ≠ 股權</span>
-    </div>
-  </div>
-
-  <div class="obj-card">
-    <div class="obj-header">
-      <div class="obj-num">2</div>
-      <div>
-        <div class="obj-question">Objection: "The 50/50 split is too high vs. market."</div>
-        <div class="obj-cn">異議：「五五分成與市場行情相比過高。」</div>
-      </div>
-    </div>
-    <div class="obj-body">
-      <div class="obj-answer">
-        On a $1M investment at our historical 165% return, the LP nets <strong>$825,000</strong> with Shore Capital's
-        50/50 structure. With a typical institutional structure (2% AUM + 20% carry + fees),
-        the LP nets approximately $592,500 — <strong>$232,500 less</strong>.
-        Shore's 50/50 on <em>net</em> profits, with zero management fees of any kind, consistently delivers more to the LP
-        than institutional alternatives. The split sounds high until you run the math.
-      </div>
-      <div class="obj-answer-cn">
-        以$100萬投資、我們165%的歷史報酬率計算，投資人在海岸資本五五架構下淨收<strong>$82.5萬</strong>。
-        在典型機構架構下（2%管理費 + 20%績效分成 + 各項費用），投資人淨收約$59.3萬——
-        <strong>少了$23.25萬</strong>。
-        海岸資本對<em>淨</em>利潤的五五分成，加上零任何形式管理費，
-        始終讓投資人比機構替代方案獲得更多。分成比例看似偏高，直至您計算數字之後。
-      </div>
-      <span class="obj-tag">LP nets MORE with Shore / 投資人淨收益更高</span>
-    </div>
-  </div>
-
-  <div class="obj-card">
-    <div class="obj-header">
-      <div class="obj-num">3</div>
-      <div>
-        <div class="obj-question">Objection: "We need audited financial statements."</div>
-        <div class="obj-cn">異議：「我們需要審計財務報告。」</div>
-      </div>
-    </div>
-    <div class="obj-body">
-      <div class="obj-answer">
-        We fully understand and sincerely respect this requirement.
-        We offer an alternative that is <strong>stronger than an audit</strong>:
-        every transaction is permanently recorded in US county government databases —
-        immutable, unalterable, cannot be restated. Enron, Wirecard, SVB, FTX, and Evergrande
-        all had clean audits before collapse. County recorder data is objective fact,
-        permanently existing, independently verifiable by any third party within hours.
-        This is the highest standard of transparency.
-      </div>
-      <div class="obj-answer-cn">
-        我們充分理解，也衷心尊重貴方此一要求。
-        我們提出一種<strong>優於審計報告</strong>的替代驗證途徑：
-        我們的每一筆交易均永久登錄於美國縣政府地政資料庫——
-        此為不可竄改、不可更動之政府正式紀錄，任何人無法重新陳述。
-        安隆、Wirecard、矽谷銀行、FTX、恆大——這些企業在崩潰之前，皆持有當年度最乾淨的審計報告。
-        相較之下，縣地政資料庫之數據為客觀事實，永久存在，
-        且任何第三方均可在數小時內獨立查驗。此乃最高標準之透明度。
-      </div>
-      <span class="obj-tag">Public records &gt; Audit opinion / 公開紀錄 &gt; 審計意見</span>
-    </div>
-  </div>
-
-  <div class="closing-card">
-    <h2>All we have is our word.</h2>
-    <div class="closing-cn">我們所有的，只是我們的一諾。</div>
-    <div class="closing-quote">
-      If a secured note is a fit, we welcome the conversation.
-      If not, we respect that completely. This is our consistent position.
-    </div>
-    <div class="closing-quote-cn">
-      若擔保票據方案對貴方而言契合適宜，我們誠摯歡迎進一步深談；
-      若不契合，我們完全理解，也完全尊重。此為我們一貫的立場。<br><br>
-      我們所有的，只是我們的一諾。而這一諾，我們從未失信。<br>
-      <em>We have kept ours.</em>
-    </div>
-    <div style="background:rgba(255,255,255,0.07);border-radius:8px;padding:14px;margin-bottom:16px;font-size:12px;line-height:1.8;color:rgba(255,255,255,0.75);font-style:italic;">
-      Virginia——<br>
-      您家族數十年的積累與傳承，對我們而言意義非凡，絕非一般。
-      在我們眼中，這不是一樁商業交易，而是一段以共同信念為根基的長遠合夥關係：
-      對信仰的虔誠、對財富的善用管家之責、對承諾的堅定忠誠，
-      以及「<strong style="color:rgba(255,255,255,0.9)">同舟共濟、榮辱與共</strong>」的信念——
-      最好的合夥，是兩方共同成就彼此、攜手向前的夥伴關係。<br>
-      我們珍視與您相識的緣分。我們承諾，以長遠的眼光，與您並肩同行。
-    </div>
-    <div class="contact-block">
-      <div class="contact-name">Andre P. Lujan</div>
-      CEO, Shore Capital Corporation / 海岸資本公司執行長<br>
-      CA Broker License #01475314<br>
-      20+ years · Zero investor losses · Immutable public record
-    </div>
-    <div class="prayer">🙏</div>
-  </div>
-
-</div>
-
-
-<!-- ═══════════ JAVASCRIPT ═══════════ -->
-<script>
-// ── Tab Navigation ──
-function showTab(id, btn) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  btn.classList.add('active');
-  // Scroll tab into view
-  btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+const { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } = Recharts;
+
+const CHERRY = "#990011";
+const NAVY = "#1E2761";
+const OFF_WHITE = "#FCF6F5";
+const WHITE = "#FFFFFF";
+
+// Inline SVG icon components (lucide-style, 24x24 viewBox)
+function Icon({ size = 20, color = "currentColor", strokeWidth = 2, children }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      {children}
+    </svg>
+  );
+}
+function Shield({ size, color, strokeWidth }) {
+  return <Icon size={size} color={color} strokeWidth={strokeWidth}>
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+  </Icon>;
+}
+function TrendingUp({ size, color, strokeWidth }) {
+  return <Icon size={size} color={color} strokeWidth={strokeWidth}>
+    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+    <polyline points="16 7 22 7 22 13"/>
+  </Icon>;
+}
+function Scale({ size, color, strokeWidth }) {
+  return <Icon size={size} color={color} strokeWidth={strokeWidth}>
+    <path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"/>
+    <path d="M2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"/>
+    <path d="M7 21H17"/>
+    <line x1="12" y1="3" x2="12" y2="21"/>
+    <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>
+  </Icon>;
+}
+function FileCheck({ size, color, strokeWidth }) {
+  return <Icon size={size} color={color} strokeWidth={strokeWidth}>
+    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <polyline points="9 15 11 17 15 13"/>
+  </Icon>;
+}
+function Route({ size, color, strokeWidth }) {
+  return <Icon size={size} color={color} strokeWidth={strokeWidth}>
+    <circle cx="6" cy="19" r="3"/>
+    <path d="M9 19h8.5a3.5 3.5 0 000-7h-11a3.5 3.5 0 010-7H15"/>
+    <circle cx="18" cy="5" r="3"/>
+  </Icon>;
+}
+function MessageCircle({ size, color, strokeWidth }) {
+  return <Icon size={size} color={color} strokeWidth={strokeWidth}>
+    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+  </Icon>;
 }
 
-// ── Chart defaults ──
-Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-Chart.defaults.color = '#666';
+const chartData = [
+  { name: "週期1", value: 433 },
+  { name: "週期2", value: 181 },
+  { name: "週期3", value: 165 },
+  { name: "週期4", value: 156 },
+  { name: "週期5", value: 68 },
+  { name: "週期6", value: 145 },
+];
 
-// ── Growth Chart (Tab 1) ──
-new Chart(document.getElementById('growthChart'), {
-  type: 'line',
-  data: {
-    labels: ['Year 0', 'Year 3', 'Year 6', 'Year 10'],
-    datasets: [{
-      label: 'Asset Value',
-      data: [100, 175, 306, 1050],
-      borderColor: '#990011',
-      backgroundColor: 'rgba(153,0,17,0.08)',
-      borderWidth: 2.5,
-      pointBackgroundColor: '#990011',
-      pointRadius: 5,
-      fill: true,
-      tension: 0.4
-    }, {
-      label: 'Annual Yield (8%)',
-      data: [8, 14, 24.5, 84],
-      borderColor: '#1E2761',
-      backgroundColor: 'transparent',
-      borderWidth: 2,
-      borderDash: [5,5],
-      pointBackgroundColor: '#1E2761',
-      pointRadius: 4,
-      fill: false,
-      tension: 0.4
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'top', labels: { font: { size: 11 }, boxWidth: 12 } },
-      tooltip: {
-        callbacks: {
-          label: ctx => ' $' + ctx.parsed.y + 'M'
-        }
-      }
-    },
-    scales: {
-      y: {
-        ticks: {
-          callback: v => '$' + v + 'M',
-          font: { size: 10 }
-        },
-        grid: { color: 'rgba(0,0,0,0.06)' }
-      },
-      x: { ticks: { font: { size: 10 } } }
-    }
-  }
-});
+const tabs = [
+  { id: 0, icon: Shield, zhLabel: "服務實績", enLabel: "Service Record" },
+  { id: 1, icon: TrendingUp, zhLabel: "業績記錄", enLabel: "Track Record" },
+  { id: 2, icon: Scale, zhLabel: "費用對比", enLabel: "Fee Comparison" },
+  { id: 3, icon: FileCheck, zhLabel: "公共記錄", enLabel: "Public Records" },
+  { id: 4, icon: Route, zhLabel: "投資路徑", enLabel: "Pathways" },
+  { id: 5, icon: MessageCircle, zhLabel: "回應", enLabel: "Response" },
+];
 
-// ── Cycle Chart (Tab 3) ──
-new Chart(document.getElementById('cycleChart'), {
-  type: 'bar',
-  data: {
-    labels: ['2003–07', '2009–13', '2013–15', '2016–18', '2019–23\n(COVID)', '2020–25'],
-    datasets: [{
-      label: 'Cumulative Return (%)',
-      data: [433, 181, 165, 156, 68, 145],
-      backgroundColor: [
-        '#990011', '#1E2761', '#990011', '#1E2761', '#C9A84C', '#990011'
-      ],
-      borderRadius: 6,
-      borderSkipped: false
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y + '%' } }
-    },
-    scales: {
-      y: {
-        ticks: { callback: v => v + '%', font: { size: 10 } },
-        grid: { color: 'rgba(0,0,0,0.06)' }
-      },
-      x: { ticks: { font: { size: 9 } } }
-    }
-  }
-});
+function StatBox({ number, zhLabel, enLabel }) {
+  return (
+    <div style={{ background: WHITE, borderRadius: 10, padding: "12px 8px", textAlign: "center", flex: 1, minWidth: 0, boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+      <div style={{ fontSize: 26, fontWeight: 800, color: CHERRY, fontFamily: "Georgia, serif", lineHeight: 1.1 }}>{number}</div>
+      <div style={{ fontSize: 12, color: NAVY, fontWeight: 600, marginTop: 4 }}>{zhLabel}</div>
+      <div style={{ fontSize: 10, color: "#666" }}>{enLabel}</div>
+    </div>
+  );
+}
 
-// ── Fee Chart (Tab 4) ──
-new Chart(document.getElementById('feeChart'), {
-  type: 'bar',
-  data: {
-    labels: ['Shore Capital\n海岸資本', 'Institutional PE\n機構私募'],
-    datasets: [{
-      label: 'LP Net Profit ($)',
-      data: [825000, 592500],
-      backgroundColor: ['#1E2761', 'rgba(153,0,17,0.6)'],
-      borderRadius: 8
-    }, {
-      label: 'Fees & Carry ($)',
-      data: [0, 462500],
-      backgroundColor: ['rgba(0,0,0,0)', 'rgba(153,0,17,0.25)'],
-      borderRadius: 8
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'top', labels: { font: { size: 11 }, boxWidth: 12 } },
-      tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y.toLocaleString() } }
-    },
-    scales: {
-      x: { stacked: true, ticks: { font: { size: 10 } } },
-      y: { stacked: true, ticks: { callback: v => '$' + (v/1000) + 'K', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.06)' } }
-    }
-  }
-});
+function ServiceRecord() {
+  return (
+    <div style={{ padding: "10px 16px", overflowY: "auto", height: "100%" }}>
+      <div style={{ textAlign: "center", marginBottom: 10 }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: NAVY, fontFamily: "Georgia, serif" }}>在討論投資之前——請先看看我們已經交出的成績</div>
+        <div style={{ fontSize: 11, color: "#555", marginTop: 2 }}>Before discussing investment — look at what we've already delivered.</div>
+      </div>
 
-// ── Path Chart (Tab 6) ──
-new Chart(document.getElementById('pathChart'), {
-  type: 'line',
-  data: {
-    labels: ['Start', 'Y3', 'Y6', 'Y10'],
-    datasets: [{
-      label: 'Chen Legacy Fund',
-      data: [100, 175, 306, 1050],
-      borderColor: '#990011',
-      backgroundColor: 'rgba(153,0,17,0.1)',
-      borderWidth: 3,
-      pointBackgroundColor: '#990011',
-      pointRadius: 6,
-      fill: true,
-      tension: 0.35
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y + 'M' } }
-    },
-    scales: {
-      y: { ticks: { callback: v => '$' + v + 'M', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.06)' } },
-      x: { ticks: { font: { size: 10 } } }
-    }
-  }
-});
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {[
+          { zh: "翠格斯37號", en: "37 Twiggs", detail_zh: "您前任經紀人提起訴訟，佔據長達六年。我們出席每一次庭審，收回了您的資產。", detail_en: "Your former broker sued and occupied for 6 years. We attended every hearing and recovered your asset.", stat: "$3.2M", stat_label: "即將上市 / Listing Soon" },
+          { zh: "鵜鶘峰 11 & 15號", en: "Pelican Crest 11 & 15", detail_zh: "您原有兩千五百萬美元報價——我們以兩千六百萬美元成交，創下歷史紀錄。", detail_en: "You had a $25M offer — we closed at $26M, setting the all-time record.", stat: "$26M", stat_label: "歷史紀錄 / Record Sale" },
+          { zh: "聖所67號", en: "67 Sanctuary", detail_zh: "已過戶結案，資金正匯入您的帳戶。", detail_en: "Closed escrow. Funds transferring to your account.", stat: "已結案", stat_label: "Closed" },
+          { zh: "聖所22號", en: "22 Sanctuary", detail_zh: "已上市，蓄勢待發。", detail_en: "Listed and positioned for success.", stat: "已上市", stat_label: "Listed" },
+        ].map((item, i) => (
+          <div key={i} style={{ background: WHITE, borderRadius: 10, padding: "10px 12px", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", borderLeft: `4px solid ${CHERRY}` }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: NAVY }}>{item.zh}</div>
+                <div style={{ fontSize: 11, color: "#777", marginBottom: 3 }}>{item.en}</div>
+                <div style={{ fontSize: 12, color: "#333", lineHeight: 1.4 }}>{item.detail_zh}</div>
+                <div style={{ fontSize: 10, color: "#777", lineHeight: 1.4, marginTop: 2 }}>{item.detail_en}</div>
+              </div>
+              <div style={{ textAlign: "center", marginLeft: 10, minWidth: 65 }}>
+                <div style={{ fontSize: 20, fontWeight: 800, color: CHERRY, fontFamily: "Georgia, serif" }}>{item.stat}</div>
+                <div style={{ fontSize: 9, color: "#666" }}>{item.stat_label}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ textAlign: "center", marginTop: 10, fontSize: 12, color: NAVY, fontWeight: 600 }}>
+        這不是推銷。這是實績。二十年公共記錄，有目共睹。
+        <div style={{ fontSize: 10, color: "#777", marginTop: 2 }}>This is not a pitch. This is a track record. Twenty years of public records, visible to all.</div>
+      </div>
+    </div>
+  );
+}
+
+function TrackRecord() {
+  return (
+    <div style={{ padding: "10px 16px", overflowY: "auto", height: "100%" }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+        <StatBox number="23" zhLabel="筆物業" enLabel="Properties" />
+        <StatBox number="288" zhLabel="個單位" enLabel="Units" />
+        <StatBox number="$40M" zhLabel="投入資金" enLabel="Invested" />
+        <StatBox number="$33.6M" zhLabel="淨收益" enLabel="Net Gains" />
+      </div>
+
+      <div style={{ background: WHITE, borderRadius: 10, padding: "10px 12px", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", marginBottom: 10 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: NAVY, textAlign: "center", marginBottom: 4 }}>六個投資週期回報率 / 6 Cycle Returns (%)</div>
+        <div style={{ width: "100%", height: 150 }}>
+          <ResponsiveContainer>
+            <BarChart data={chartData} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: NAVY }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: "#999" }} axisLine={false} tickLine={false} />
+              <Tooltip formatter={(v) => [`${v}%`, "回報率"]} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+              <Bar dataKey="value" radius={[6, 6, 0, 0]} label={{ position: "top", fontSize: 11, fontWeight: 700, fill: CHERRY, formatter: (v) => `${v}%` }}>
+                {chartData.map((_, i) => (
+                  <Cell key={i} fill={i === 0 ? CHERRY : NAVY} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div style={{ background: CHERRY, borderRadius: 10, padding: "12px 16px", textAlign: "center" }}>
+        <div style={{ fontSize: 22, fontWeight: 800, color: WHITE, fontFamily: "Georgia, serif" }}>投資者損失：零</div>
+        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", marginTop: 2 }}>Investor Losses: Zero</div>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", marginTop: 6 }}>每筆交易均永久記錄於橙縣及洛杉磯縣地政登記機關</div>
+        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.55)" }}>Every transaction permanently recorded with Orange & LA County Recorders</div>
+      </div>
+    </div>
+  );
+}
+
+function FeeComparison() {
+  return (
+    <div style={{ padding: "10px 16px", overflowY: "auto", height: "100%" }}>
+      <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+        <div style={{ flex: 1, background: "#f0f0f0", borderRadius: 10, padding: "12px 10px", border: "1px solid #ddd" }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#666", textAlign: "center", marginBottom: 8 }}>機構基金</div>
+          <div style={{ fontSize: 10, color: "#888", textAlign: "center", marginBottom: 8 }}>Institutional Fund</div>
+          {["2% 管理費 Mgmt Fee", "1.5% 資產管理 AUM", "20% 附帶權益 Carry", "物業管理費 Property Mgmt", "資本催繳費 Capital Calls", "審計費 Audit Fees"].map((fee, i) => (
+            <div key={i} style={{ fontSize: 11, color: "#555", padding: "4px 0", borderBottom: "1px solid #e0e0e0", textAlign: "center" }}>{fee}</div>
+          ))}
+          <div style={{ fontSize: 11, color: "#999", textAlign: "center", marginTop: 8, fontStyle: "italic" }}>費用層層疊加 / Fees stack up</div>
+        </div>
+        <div style={{ flex: 1, background: WHITE, borderRadius: 10, padding: "12px 10px", border: `2px solid ${CHERRY}`, boxShadow: `0 0 12px rgba(153,0,17,0.15)` }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: CHERRY, textAlign: "center", marginBottom: 8 }}>海岸資本</div>
+          <div style={{ fontSize: 10, color: "#888", textAlign: "center", marginBottom: 8 }}>Shore Capital</div>
+          {["管理費 Mgmt Fee", "資產管理費 AUM Fee", "物業管理費 Property Mgmt", "資本催繳費 Capital Calls", "隱藏費用 Hidden Fees"].map((fee, i) => (
+            <div key={i} style={{ fontSize: 11, color: "#333", padding: "4px 0", borderBottom: "1px solid #f0e0e0", textAlign: "center", display: "flex", justifyContent: "center", alignItems: "center", gap: 6 }}>
+              <span style={{ textDecoration: "line-through", color: "#bbb" }}>{fee}</span>
+              <span style={{ color: CHERRY, fontWeight: 800, fontSize: 14 }}>$0</span>
+            </div>
+          ))}
+          <div style={{ fontSize: 13, fontWeight: 700, color: CHERRY, textAlign: "center", marginTop: 8 }}>50 / 50 利潤共享</div>
+          <div style={{ fontSize: 10, color: "#666", textAlign: "center" }}>50/50 Profit Split</div>
+        </div>
+      </div>
+
+      <div style={{ background: `linear-gradient(135deg, ${NAVY}, ${CHERRY})`, borderRadius: 10, padding: "14px 16px", textAlign: "center" }}>
+        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.8)" }}>按五百萬美元投資、七年期計算 / Based on $5M investment over 7 years</div>
+        <div style={{ fontSize: 28, fontWeight: 800, color: WHITE, fontFamily: "Georgia, serif", marginTop: 4 }}>您節省 $870,000</div>
+        <div style={{ fontSize: 14, color: "rgba(255,255,255,0.85)" }}>Virginia saves $870,000</div>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.65)", marginTop: 6, fontStyle: "italic" }}>「華倫・巴菲特從未向其合夥人收取管理費」</div>
+        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)" }}>"Warren Buffett never charged his partners a management fee"</div>
+      </div>
+    </div>
+  );
+}
+
+function PublicRecords() {
+  return (
+    <div style={{ padding: "10px 16px", overflowY: "auto", height: "100%" }}>
+      <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+        <div style={{ flex: 1, background: WHITE, borderRadius: 10, padding: "12px 10px", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", borderTop: `3px solid ${CHERRY}` }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: CHERRY, textAlign: "center" }}>審計</div>
+          <div style={{ fontSize: 10, color: "#888", textAlign: "center", marginBottom: 8 }}>Audits</div>
+          <div style={{ fontSize: 12, color: "#555", textAlign: "center", fontWeight: 600 }}>可撤回</div>
+          <div style={{ fontSize: 10, color: "#999", textAlign: "center", marginBottom: 6 }}>Revocable</div>
+          <div style={{ fontSize: 11, color: "#666", lineHeight: 1.5 }}>
+            審計為專業意見——可修訂、可重述、可撤回。
+          </div>
+          <div style={{ fontSize: 10, color: "#999", lineHeight: 1.4, marginTop: 2 }}>
+            Audits are professional opinions — revisable, restatable, revocable.
+          </div>
+        </div>
+        <div style={{ flex: 1, background: WHITE, borderRadius: 10, padding: "12px 10px", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", borderTop: `3px solid ${NAVY}` }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: NAVY, textAlign: "center" }}>公共記錄</div>
+          <div style={{ fontSize: 10, color: "#888", textAlign: "center", marginBottom: 8 }}>Public Records</div>
+          <div style={{ fontSize: 12, color: NAVY, textAlign: "center", fontWeight: 600 }}>不可更改</div>
+          <div style={{ fontSize: 10, color: "#999", textAlign: "center", marginBottom: 6 }}>Immutable</div>
+          <div style={{ fontSize: 11, color: "#666", lineHeight: 1.5 }}>
+            政府記錄之事實——永久、不可更改、毋須中介即可查驗。
+          </div>
+          <div style={{ fontSize: 10, color: "#999", lineHeight: 1.4, marginTop: 2 }}>
+            Government-recorded facts — permanent, immutable, independently verifiable.
+          </div>
+        </div>
+      </div>
+
+      <div style={{ background: WHITE, borderRadius: 10, padding: "10px 12px", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", marginBottom: 10 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: NAVY, textAlign: "center", marginBottom: 6 }}>均獲無保留意見，隨後災難性崩潰</div>
+        <div style={{ fontSize: 10, color: "#888", textAlign: "center", marginBottom: 8 }}>All received unqualified opinions, then catastrophically collapsed</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center" }}>
+          {["安隆 Enron", "雷曼 Lehman", "威卡 Wirecard", "矽谷銀行 SVB", "FTX", "恆大 Evergrande"].map((name, i) => (
+            <div key={i} style={{ background: "#fef0f0", border: `1px solid ${CHERRY}`, borderRadius: 6, padding: "4px 10px", fontSize: 11, color: CHERRY, fontWeight: 600 }}>
+              {name}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 10 }}>
+        <div style={{ flex: 1, background: "#fff3f3", borderRadius: 10, padding: "12px", textAlign: "center" }}>
+          <div style={{ fontSize: 32, fontWeight: 800, color: CHERRY, fontFamily: "Georgia, serif" }}>39%</div>
+          <div style={{ fontSize: 11, color: NAVY, fontWeight: 600 }}>PCAOB 審計檢查缺陷率</div>
+          <div style={{ fontSize: 10, color: "#888" }}>PCAOB Audit Deficiency Rate</div>
+        </div>
+        <div style={{ flex: 1, background: NAVY, borderRadius: 10, padding: "12px", textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: WHITE, fontFamily: "Georgia, serif" }}>意見終究是意見</div>
+          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", marginTop: 4 }}>Opinions remain opinions.</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Pathways() {
+  return (
+    <div style={{ padding: "10px 16px", overflowY: "auto", height: "100%" }}>
+      <div style={{ textAlign: "center", marginBottom: 10 }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: NAVY, fontFamily: "Georgia, serif" }}>兩條路徑</div>
+        <div style={{ fontSize: 11, color: "#777" }}>Two Investment Pathways</div>
+      </div>
+
+      <div style={{ background: WHITE, borderRadius: 12, padding: "14px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", border: `2px solid ${NAVY}`, marginBottom: 10 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: NAVY }}>安全路徑</div>
+            <div style={{ fontSize: 11, color: "#888" }}>Lane 1 — Secured Note</div>
+          </div>
+          <div style={{ background: NAVY, color: WHITE, borderRadius: 8, padding: "4px 10px", fontSize: 11, fontWeight: 700 }}>債權 DEBT</div>
+        </div>
+        <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+          <div style={{ flex: 1, textAlign: "center", background: OFF_WHITE, borderRadius: 8, padding: "8px 4px" }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: NAVY, fontFamily: "Georgia, serif" }}>$3-5M</div>
+            <div style={{ fontSize: 10, color: "#666" }}>投資額 / Investment</div>
+          </div>
+          <div style={{ flex: 1, textAlign: "center", background: OFF_WHITE, borderRadius: 8, padding: "8px 4px" }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: CHERRY, fontFamily: "Georgia, serif" }}>7%</div>
+            <div style={{ fontSize: 10, color: "#666" }}>年利率 / Annual</div>
+          </div>
+          <div style={{ flex: 1, textAlign: "center", background: OFF_WHITE, borderRadius: 8, padding: "8px 4px" }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: NAVY, fontFamily: "Georgia, serif" }}>3年</div>
+            <div style={{ fontSize: 10, color: "#666" }}>期限 / Term</div>
+          </div>
+        </div>
+        <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>
+          以持有加州沿海不動產產權之有限責任公司擔保。無最低投資額限制，無審計要求。
+        </div>
+        <div style={{ fontSize: 10, color: "#999", lineHeight: 1.4, marginTop: 2 }}>
+          Secured by LLC holding California coastal real estate title. No minimum. No audit required.
+        </div>
+      </div>
+
+      <div style={{ background: WHITE, borderRadius: 12, padding: "14px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", border: `2px solid ${CHERRY}`, marginBottom: 10 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: CHERRY }}>成長路徑</div>
+            <div style={{ fontSize: 11, color: "#888" }}>Lane 2 — Equity Partnership</div>
+          </div>
+          <div style={{ background: CHERRY, color: WHITE, borderRadius: 8, padding: "4px 10px", fontSize: 11, fontWeight: 700 }}>股權 EQUITY</div>
+        </div>
+        <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+          <div style={{ flex: 1, textAlign: "center", background: OFF_WHITE, borderRadius: 8, padding: "8px 4px" }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: CHERRY, fontFamily: "Georgia, serif" }}>50/50</div>
+            <div style={{ fontSize: 10, color: "#666" }}>利潤共享 / Split</div>
+          </div>
+          <div style={{ flex: 1, textAlign: "center", background: OFF_WHITE, borderRadius: 8, padding: "8px 4px" }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: NAVY, fontFamily: "Georgia, serif" }}>$15M+</div>
+            <div style={{ fontSize: 10, color: "#666" }}>沿海建築 / Coastal</div>
+          </div>
+          <div style={{ flex: 1, textAlign: "center", background: OFF_WHITE, borderRadius: 8, padding: "8px 4px" }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: NAVY, fontFamily: "Georgia, serif" }}>1031</div>
+            <div style={{ fontSize: 10, color: "#666" }}>稅務交換 / Exchange</div>
+          </div>
+        </div>
+        <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>
+          每三十至三十六個月進行1031交換。唯有您獲利，我們方能獲利。
+        </div>
+        <div style={{ fontSize: 10, color: "#999", lineHeight: 1.4, marginTop: 2 }}>
+          1031 exchange every 30–36 months. We only profit when you profit.
+        </div>
+      </div>
+
+      <div style={{ background: `linear-gradient(135deg, ${NAVY}, ${CHERRY})`, borderRadius: 10, padding: "10px 16px", textAlign: "center" }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: WHITE }}>零管理費。零資產管理費。零物業管理費。</div>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.75)", marginTop: 2 }}>Zero management fees. Zero AUM fees. Zero property management fees.</div>
+      </div>
+    </div>
+  );
+}
+
+function Response() {
+  return (
+    <div style={{ padding: "10px 16px", overflowY: "auto", height: "100%" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 }}>
+        {[
+          { zh: "我們的成績不靠推銷——靠的是二十年不可更改的公共記錄。", en: "Our results don't rely on pitches — they rest on 20 years of immutable public records.", icon: "📋" },
+          { zh: "審計是意見，可以撤回。地政登記是事實，永久不變。", en: "Audits are opinions that can be revoked. County records are facts that endure.", icon: "🔒" },
+          { zh: "我們的費用結構與巴菲特原始合夥模式一致——零管理費，利潤共享。", en: "Our fee structure mirrors Buffett's original partnership — zero fees, shared profits.", icon: "🤝" },
+        ].map((card, i) => (
+          <div key={i} style={{ background: WHITE, borderRadius: 10, padding: "12px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", display: "flex", gap: 10, alignItems: "flex-start" }}>
+            <div style={{ fontSize: 22, lineHeight: 1 }}>{card.icon}</div>
+            <div>
+              <div style={{ fontSize: 13, color: NAVY, fontWeight: 600, lineHeight: 1.5 }}>{card.zh}</div>
+              <div style={{ fontSize: 11, color: "#888", lineHeight: 1.4, marginTop: 2 }}>{card.en}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ background: NAVY, borderRadius: 12, padding: "16px", textAlign: "center" }}>
+        <div style={{ fontSize: 14, color: "rgba(255,255,255,0.85)", lineHeight: 1.7, marginBottom: 8 }}>
+          Virginia——我們共同建設的事業，其意義遠超任何單一交易。這是一份植根於信仰、管家職責與堅定信念的合夥關係——最穩固的聯盟，是雙方同舟共濟、互利共贏。
+        </div>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", lineHeight: 1.6, marginBottom: 10 }}>
+          What we are building together transcends any single transaction. This is a partnership rooted in faith, stewardship, and conviction — the strongest alliances are those where both sides share the journey and the reward.
+        </div>
+        <div style={{ width: 50, height: 1, background: CHERRY, margin: "0 auto 10px" }} />
+        <div style={{ fontSize: 16, fontWeight: 700, color: WHITE, fontFamily: "Georgia, serif", lineHeight: 1.6 }}>
+          我們言出必行，從未食言。
+        </div>
+        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", marginTop: 2 }}>
+          We have given our word. We have kept it.
+        </div>
+        <div style={{ marginTop: 12, fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
+          若此合作契合，我們誠摯歡迎。若不適合，我們對您物業的服務承諾不會改變。
+        </div>
+        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+          If this partnership fits, we welcome it. If not, our service commitment to your properties remains unchanged.
+        </div>
+        <div style={{ marginTop: 14 }}>
+          <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>敬祝 商安</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: WHITE, marginTop: 4 }}>Andre P. Lujan 🙏</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const contentComponents = [ServiceRecord, TrackRecord, FeeComparison, PublicRecords, Pathways, Response];
+
+function ShoreCapitalVirginia() {
+  const [activeTab, setActiveTab] = useState(0);
+  const ActiveContent = contentComponents[activeTab];
+
+  return (
+    <div style={{
+      width: "100%",
+      height: "100vh",
+      maxHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      background: OFF_WHITE,
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      overflow: "hidden",
+      position: "fixed",
+      top: 0, left: 0, right: 0, bottom: 0,
+    }}>
+      {/* HEADER */}
+      <div style={{
+        background: `linear-gradient(135deg, ${NAVY} 0%, #2a3580 100%)`,
+        padding: "14px 16px 10px",
+        textAlign: "center",
+        flexShrink: 0,
+      }}>
+        <div style={{ fontSize: 20, fontWeight: 700, color: WHITE, fontFamily: "Georgia, serif", letterSpacing: 1 }}>
+          Shore Capital Corporation
+        </div>
+        <div style={{ fontSize: 14, color: "rgba(255,255,255,0.8)", fontFamily: "Georgia, serif", letterSpacing: 3, marginTop: 2 }}>
+          海岸資本公司
+        </div>
+        <div style={{ width: 40, height: 2, background: CHERRY, margin: "6px auto 0", borderRadius: 1 }} />
+      </div>
+
+      {/* CONTENT AREA */}
+      <div style={{
+        flex: 1,
+        minHeight: 0,
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+      }}>
+        <ActiveContent />
+      </div>
+
+      {/* BUTTON GRID — LINE Rich Menu Style */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gridTemplateRows: "repeat(2, 1fr)",
+        gap: 1,
+        background: "#ddd",
+        flexShrink: 0,
+        borderTop: `2px solid ${NAVY}`,
+      }}>
+        {tabs.map((tab) => {
+          const IconComp = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "10px 4px 8px",
+                background: isActive ? WHITE : NAVY,
+                border: "none",
+                cursor: "pointer",
+                borderBottom: isActive ? `3px solid ${CHERRY}` : "3px solid transparent",
+                transition: "all 0.15s ease",
+                boxShadow: isActive ? `inset 0 -3px 0 ${CHERRY}` : "none",
+              }}
+            >
+              <IconComp
+                size={20}
+                color={isActive ? CHERRY : "rgba(255,255,255,0.85)"}
+                strokeWidth={isActive ? 2.5 : 1.8}
+              />
+              <div style={{
+                fontSize: 12,
+                fontWeight: isActive ? 700 : 500,
+                color: isActive ? NAVY : "rgba(255,255,255,0.95)",
+                marginTop: 3,
+                lineHeight: 1.2,
+              }}>
+                {tab.zhLabel}
+              </div>
+              <div style={{
+                fontSize: 9,
+                color: isActive ? "#888" : "rgba(255,255,255,0.6)",
+                marginTop: 1,
+              }}>
+                {tab.enLabel}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<ShoreCapitalVirginia />);
 </script>
-
 </body>
 </html>
